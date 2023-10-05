@@ -1,4 +1,30 @@
 name: "resnet50"
-backend: "onnxruntime"
-max_batch_size : 0
+platform: "onnxruntime_onnx"
+max_batch_size : 8
 dynamic_batching {}
+
+# Not needed if backend is onnx
+# input [
+#   {
+#     name: "inputs"
+#     data_type: TYPE_FP32
+#     dims: [ 224,224,3 ]
+#   }
+# ]
+
+# output [
+#   {
+#     name: "output_0"
+#     data_type: TYPE_FP32
+#     dims: [ 1000 ]
+#   }
+# ]
+
+# If remove this, onnx runtime will be used.
+optimization { execution_accelerators {
+  gpu_execution_accelerator : [ {
+    name : "tensorrt"
+    parameters { key: "precision_mode" value: "FP16" }
+    parameters { key: "max_workspace_size_bytes" value: "1073741824" }
+    }]
+}}
